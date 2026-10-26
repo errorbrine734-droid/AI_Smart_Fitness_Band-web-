@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Fitness Band - Web Telemetry</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --success: #22c55e;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: var(--border);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--danger);
+        }
+
+        .status-dot.connected {
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .card-header {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-subtext {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Specific Card Modifiers */
+        .highlight-card {
+            border-color: rgba(56, 189, 248, 0.4);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(56, 189, 248, 0.05) 100%);
+        }
+
+        .battery-bar-container {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 4px;
+            height: 8px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .battery-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        #error-banner {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.4rem; }
+            .card-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header & Connection Controls -->
+        <header>
+            <h1>AI Smart Fitness Band - Web Telemetry</h1>
+            <div class="control-panel">
+                <button id="connect-btn">Connect Band</button>
+                <button id="disconnect-btn" disabled style="background-color: transparent; color: var(--danger); border: 1px solid var(--danger); box-shadow: none;">Disconnect</button>
+                <div class="status-badge">
+                    <span id="status-dot" class="status-dot"></span>
+                    <span id="connection-status">Disconnected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Error Notification Banner -->
+        <div id="error-banner"></div>
+
+        <!-- Dashboard Sensor Cards Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- 1. AI Activity Prediction Card -->
+            <div class="card highlight-card">
+                <div class="card-header">
+                    <span>AI Model Output</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div id="activity-value" class="card-value">--</div>
+                <div class="card-subtext">Classified via Edge Impulse Edge ML</div>
+            </div>
+
+            <!-- 2. MAX30102 Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span>MAX30102 (Vitals)</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span id="hr-value" class="card-value">--</span>
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">BPM</span>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: baseline;">
+                        <span id="spo2-value" style="font-size: 1.2rem; font-weight: 600;">--</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">SpO2 %</span>
+                    </div>
+                </div>
+                <div class="card-subtext">Optical Pulse Oximetry</div>
+            </div>
+
+            <!-- 3. Motion Sensor Card (MPU6050 / LIS3DH) -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Motion Sensor</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div id="motion-value" class="card-value">--</div>
+                <div class="card-subtext">Accelerometer & Gyroscope Telemetry</div>
+            </div>
+
+            <!-- 4. Environment Sensor Card (DHT22) -->
+            <div class="card">
+                <div class="card-header">
+                    <span>DHT22 Environment</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div id="temp-value" class="card-value" style="font-size: 1.4rem;">--°C</div>
+                        <div class="card-subtext">Temperature</div>
+                    </div>
+                    <div>
+                        <div id="humidity-value" class="card-value" style="font-size: 1.4rem;">--%</div>
+                        <div class="card-subtext">Humidity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Air Quality Card (MQ-135) -->
+            <div class="card">
+                <div class="card-header">
+                    <span>MQ-135 Air Quality</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19 12H2"/></svg>
+                </div>
+                <div id="aqi-value" class="card-value">-- PPM</div>
+                <div class="card-subtext">Air Gas Concentration Index</div>
+            </div>
+
+            <!-- 6. Power Status Card (LiPo Battery) -->
+            <div class="card">
+                <div class="card-header">
+                    <span>LiPo Battery Level</span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"/><line x1="23" y1="11" x2="23" y2="13"/></svg>
+                </div>
+                <div>
+                    <div id="battery-value" class="card-value">--%</div>
+                    <div class="battery-bar-container">
+                        <div id="battery-bar" class="battery-bar"></div>
+                    </div>
+                </div>
+                <div id="battery-status-text" class="card-subtext">Charging State: Unknown</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript & Web Bluetooth Implementation -->
+    <script>
+        // Custom ESP32 BLE Service & Characteristic UUID Placeholders
+        // Replace these with your actual BLE Service UUID and Telemetry Characteristic UUID programmed into the ESP32
+        const SERVICE_UUID = "19b10000-e8f2-537e-4f6c-d104768a1214";
+        const CHARACTERISTIC_UUID = "19b10001-e8f2-537e-4f6c-d104768a1214";
+
+        let bluetoothDevice = null;
+        let bluetoothCharacteristic = null;
+
+        // DOM Elements
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        const statusDot = document.getElementById('status-dot');
+        const errorBanner = document.getElementById('error-banner');
+
+        // Sensor UI Elements
+        const activityVal = document.getElementById('activity-value');
+        const hrVal = document.getElementById('hr-value');
+        const spo2Val = document.getElementById('spo2-value');
+        const motionVal = document.getElementById('motion-value');
+        const tempVal = document.getElementById('temp-value');
+        const humidityVal = document.getElementById('humidity-value');
+        const aqiVal = document.getElementById('aqi-value');
+        const batteryVal = document.getElementById('battery-value');
+        const batteryBar = document.getElementById('battery-bar');
+        const batteryStatusText = document.getElementById('battery-status-text');
+
+        // Check Web Bluetooth API Browser Compatibility
+        if (!navigator.bluetooth) {
+            showError("Web Bluetooth API is not supported in this browser! Please use Google Chrome, Edge, or Opera over HTTPS/localhost.");
+            connectBtn.disabled = true;
+        }
+
+        connectBtn.addEventListener('click', connectBLE);
+        disconnectBtn.addEventListener('click', disconnectBLE);
+
+        async function connectBLE() {
+            hideError();
+            try {
+                connectionStatus.textContent = "Scanning & Connecting...";
+                
+                // Request BLE device filtering by name or matching service UUID
+                // acceptAllDevices: true can be used if testing with arbitrary names, paired with optionalServices
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "ESP32" }, { name: "AI_Fitness_Band" }],
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+                // Connect to GATT Server
+                const server = await bluetoothDevice.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                bluetoothCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+                // Subscribe to notifications
+                await bluetoothCharacteristic.startNotifications();
+                bluetoothCharacteristic.addEventListener('characteristicvaluechanged', handleTelemetryNotification);
+
+                // Update UI state upon successful connection
+                updateConnectionState(true);
+
+            } catch (error) {
+                console.error("Connection failed:", error);
+                showError("Bluetooth Connection Failed: " + error.message);
+                updateConnectionState(false);
+            }
+        }
+
+        function disconnectBLE() {
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.gatt.disconnect();
+            }
+            updateConnectionState(false);
+        }
+
+        function onDisconnected() {
+            console.warn("Device disconnected unexpectedly.");
+            updateConnectionState(false);
+            showError("Device disconnected connection dropped.");
+        }
+
+        function updateConnectionState(isConnected) {
+            if (isConnected) {
+                connectionStatus.textContent = "Connected";
+                statusDot.classList.add('connected');
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+            } else {
+                connectionStatus.textContent = "Disconnected";
+                statusDot.classList.remove('connected');
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                resetDashboardValues();
+            }
+        }
+
+        // Parse incoming raw telemetry string notifications
+        // Expected format: "HR,SpO2,Activity,Temp,Humidity,AQI,Battery,ChargingState"
+        // Example: "72,98,Walking,25.4,60.2,45,85,Charging"
+        function handleTelemetryNotification(event) {
+            const value = event.target.value;
+            const decoder = new TextDecoder('utf-8');
+            const rawData = decoder.decode(value);
+
+            console.log("Received BLE Data:", rawData);
+
+            const parts = rawData.split(',');
+            if (parts.length >= 7) {
+                const hr = parts[0].trim();
+                const spo2 = parts[1].trim();
+                const activity = parts[2].trim();
+                const temp = parts[3].trim();
+                const humidity = parts[4].trim();
+                const aqi = parts[5].trim();
+                const battery = parts[6].trim();
+                const charging = parts[7] ? parts[7].trim() : "Normal";
+
+                // Update DOM elements dynamically
+                hrVal.textContent = hr;
+                spo2Val.textContent = spo2 + "%";
+                activityVal.textContent = activity;
+                motionVal.textContent = (activity === "Running" ? "High Intensity" : (activity === "Walking" ? "Moderate" : "Stationary"));
+                tempVal.textContent = temp + "°C";
+                humidityVal.textContent = humidity + "%";
+                aqiVal.textContent = aqi + " PPM";
+                
+                const battNum = parseInt(battery, 10);
+                batteryVal.textContent = battNum + "%";
+                batteryBar.style.width = battNum + "%";
+                batteryStatusText.textContent = `State: ${charging}`;
+                
+                // Color-code battery bar based on level
+                if (battNum < 20) {
+                    batteryBar.style.backgroundColor = "var(--danger)";
+                } else {
+                    batteryBar.style.backgroundColor = "var(--success)";
+                }
+            }
+        }
+
+        function resetDashboardValues() {
+            activityVal.textContent = "--";
+            hrVal.textContent = "--";
+            spo2Val.textContent = "--";
+            motionVal.textContent = "--";
+            tempVal.textContent = "--°C";
+            humidityVal.textContent = "--%";
+            aqiVal.textContent = "-- PPM";
+            batteryVal.textContent = "--%";
+            batteryBar.style.width = "0%";
+            batteryStatusText.textContent = "Charging State: Unknown";
+        }
+
+        function showError(message) {
+            errorBanner.textContent = message;
+            errorBanner.style.display = "block";
+        }
+
+        function hideError() {
+            errorBanner.style.display = "none";
+        }
+    </script>
+</body>
+</html>
