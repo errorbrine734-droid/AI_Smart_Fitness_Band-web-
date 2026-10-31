@@ -1,314 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Smart Fitness Band - Web Telemetry</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.2);
-            --success: #22c55e;
-            --danger: #ef4444;
-            --border: #334155;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .control-panel {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        button {
-            background-color: var(--accent);
-            color: var(--bg-color);
-            border: none;
-            padding: 10px 20px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        button:disabled {
-            background-color: var(--border);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--danger);
-        }
-
-        .status-dot.connected {
-            background-color: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-
-        /* Dashboard Grid Layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            border-color: rgba(56, 189, 248, 0.3);
-        }
-
-        .card-header {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .card-subtext {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        /* Specific Card Modifiers */
-        .highlight-card {
-            border-color: rgba(56, 189, 248, 0.4);
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(56, 189, 248, 0.05) 100%);
-        }
-
-        .battery-bar-container {
-            width: 100%;
-            background-color: var(--border);
-            border-radius: 4px;
-            height: 8px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .battery-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--success);
-            transition: width 0.3s ease;
-        }
-
-        #error-banner {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            color: #fca5a5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 1.4rem; }
-            .card-value { font-size: 1.5rem; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f6fa">
+  <title>SmartFit Guardian | Fitness Dashboard</title>
+  <style>
+    :root{--page:#f4f5f8;--ink:#151923;--muted:#7c8494;--line:#e7e9ef;--white:#fff;--black:#080a0f;--red:#ff365d;--blue:#18baff;--cyan:#12d7d0;--purple:#9564ff;--green:#20c997;--shadow:0 18px 50px rgba(22,30,48,.09)}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{min-height:100vh;background:var(--page);color:var(--ink);padding:28px 22px 48px}
+    .container{width:min(1180px,100%);margin:auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.5px;font-size:1.12rem}
+    .brand-mark{width:39px;height:39px;border-radius:13px;background:#10131b;color:#fff;display:grid;place-items:center;font-size:20px;box-shadow:0 7px 18px #10131b25}
+    .brand small{display:block;color:var(--muted);font-size:.7rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+    .control-panel{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    button{border:0;border-radius:12px;padding:12px 18px;font-weight:750;cursor:pointer;transition:.2s;background:#11151e;color:#fff;box-shadow:0 7px 18px #10131b20}
+    button:hover{transform:translateY(-2px)}button:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+    #disconnect-btn{background:#fff;color:#d33a55;border:1px solid #ffd5dd;box-shadow:none}
+    .status-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border-radius:30px;background:#fff;border:1px solid var(--line);font-size:.82rem;font-weight:700;color:#555d6c}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:#f05268}.status-dot.connected{background:#19bf82;box-shadow:0 0 0 4px #19bf8220}
+    #error-banner{display:none;margin:0 0 18px;padding:13px 16px;border-radius:12px;background:#fff0f2;color:#b4233d;border:1px solid #ffcbd4;font-size:.9rem}
+    .hero{position:relative;overflow:hidden;display:grid;grid-template-columns:1.02fr .98fr;align-items:center;min-height:390px;padding:44px 48px;border-radius:30px;background:linear-gradient(115deg,#fff 0%,#f4f3f1 55%,#e9e7e4 100%);box-shadow:var(--shadow);margin-bottom:34px}
+    .hero-copy{position:relative;z-index:2;max-width:490px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#596273;background:#fff;border:1px solid #e8e9ed;border-radius:30px;padding:8px 12px;font-size:.72rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}
+    .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}
+    h1{font-size:clamp(2.2rem,4.5vw,3.7rem);line-height:1.04;letter-spacing:-2.4px;margin:20px 0 14px;color:#151923}.gradient-text{background:linear-gradient(90deg,#f04462,#8d62f5);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-copy p{max-width:420px;color:#737b89;line-height:1.7;font-size:.98rem}.hero-note{display:flex;align-items:center;gap:9px;margin-top:24px;color:#6c7482;font-size:.8rem;font-weight:650}.hero-note span{display:grid;place-items:center;width:27px;height:27px;background:#fff;border-radius:9px;color:#18a9a0}
+    .device-stage{height:300px;position:relative;display:flex;align-items:center;justify-content:center;perspective:900px}
+    .phone{position:absolute;width:174px;height:285px;left:4%;top:10px;border:7px solid #20242c;border-radius:30px;background:#fff;transform:rotate(-10deg);box-shadow:0 20px 38px #11182735;padding:17px 12px;z-index:1}
+    .phone-notch{width:58px;height:12px;border-radius:0 0 10px 10px;background:#20242c;position:absolute;top:0;left:50%;transform:translateX(-50%)}
+    .phone-title{font-size:10px;font-weight:800;text-align:center;margin:7px 0 14px}.phone-label{font-size:8px;color:#89909c}.phone-stat{font-size:21px;font-weight:850;margin:2px 0 9px}.phone-chart{height:54px;display:flex;align-items:end;gap:3px;margin:7px 0 14px}.phone-chart b{flex:1;border-radius:3px 3px 0 0;background:#ff647e;height:var(--h)}.phone-chart.blue b{background:#26b8ed}.phone-row{display:flex;justify-content:space-between;font-size:8px;color:#7b8492;margin-top:10px}
+    .watch{position:absolute;right:7%;top:7px;width:244px;height:270px;z-index:2;transform:rotate(9deg);filter:drop-shadow(0 24px 24px #10131b35)}
+    .watch-strap{position:absolute;width:104px;height:300px;left:70px;top:-16px;border-radius:38px;background:linear-gradient(90deg,#16191f,#343941 48%,#171a20);z-index:0}
+    .watch-case{position:absolute;inset:16px 5px 16px 5px;border-radius:47px;background:linear-gradient(135deg,#656a72,#16191f 38%,#454a52 75%,#15181e);padding:11px;z-index:1;box-shadow:inset 0 0 0 2px #858a91}
+    .watch-screen{height:100%;border-radius:38px;background:#050609;color:#fff;padding:29px 18px 16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+    .watch-reading{display:flex;align-items:center;gap:11px}.watch-icon{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:14px}.watch-icon.red{background:#35101a;color:#ff4966}.watch-icon.blue{background:#062638;color:#16bfff}.watch-number{font-size:25px;font-weight:850;line-height:1}.watch-unit{font-size:11px;color:#a6adba;margin-top:3px}.watch-wave{height:35px;display:flex;align-items:center;gap:3px}.watch-wave i{display:block;flex:1;height:var(--h);border-radius:3px;background:#ff4164}.watch-button{height:35px;border-radius:20px;background:#24262b;color:#fff;display:grid;place-items:center;font-size:20px}
+    .section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin:0 2px 17px}.section-heading h2{font-size:1.35rem;letter-spacing:-.5px}.section-heading p{font-size:.83rem;color:var(--muted);margin-top:5px}.live-label{font-size:.72rem;font-weight:800;color:#0b9c78;background:#e3faf2;border-radius:30px;padding:8px 12px;white-space:nowrap}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .card{min-width:0;background:var(--black);color:#fff;border-radius:23px;padding:19px 18px 16px;min-height:190px;box-shadow:0 13px 27px #10131b16;position:relative;overflow:hidden}
+    .card-header{display:flex;align-items:center;justify-content:space-between;color:#aab0bd;font-size:.76rem;font-weight:700;letter-spacing:.35px;margin-bottom:16px}.card-header svg{width:20px;height:20px}
+    .card-value{font-size:2rem;line-height:1.1;font-weight:850;letter-spacing:-1px;color:#fff}.metric-unit{font-size:.78rem;color:#9ca3b1;font-weight:650;margin-left:5px}.metric-line{display:flex;align-items:baseline;gap:5px}.metric-secondary{font-size:1rem;font-weight:750;margin-top:9px;color:#e9edf4}.metric-secondary small{font-size:.72rem;color:#969eac;font-weight:600}
+    .chart{height:54px;display:flex;align-items:end;gap:3px;margin-top:15px;border-bottom:1px solid #30343d;padding:0 1px 3px}.chart i{display:block;flex:1;min-width:2px;height:var(--h);border-radius:3px 3px 0 0;background:var(--chart);opacity:.92}.card-foot{display:flex;justify-content:space-between;color:#77808f;font-size:.68rem;margin-top:7px}
+    .red-card{--chart:#ff365d}.blue-card{--chart:#13bdf4}.cyan-card{--chart:#12d7d0}.purple-card{--chart:#9465ff}.green-card{--chart:#22c997}
+    .activity-value{font-size:1.65rem;letter-spacing:-.5px}.activity-pill{display:inline-flex;padding:6px 10px;border-radius:20px;background:#252833;color:#c9d0dc;font-size:.7rem;margin-top:10px}
+    .split-values{display:flex;justify-content:space-between;gap:10px}.split-values .card-value{font-size:1.45rem}.split-values .card-subtext{font-size:.68rem;color:#8c95a4;margin-top:5px}
+    .battery-bar-container{width:100%;height:7px;background:#30343d;border-radius:10px;overflow:hidden;margin-top:15px}.battery-bar{height:100%;width:0;background:var(--green);border-radius:10px;transition:width .35s}.card-subtext{font-size:.72rem;color:#9098a6;margin-top:9px}
+    .bottom-note{margin-top:18px;text-align:center;color:#9299a6;font-size:.75rem;line-height:1.6}
+    @media(max-width:950px){.hero{padding:34px 30px;grid-template-columns:1fr 1fr}.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phone{left:0}.watch{right:0}}
+    @media(max-width:650px){body{padding:16px 13px 32px}.topbar{align-items:flex-start;flex-direction:column}.control-panel{width:100%}.control-panel button{flex:1}.status-badge{margin-left:auto}.hero{grid-template-columns:1fr;padding:28px 23px 12px;min-height:0;border-radius:24px}.hero-copy p{font-size:.9rem}.device-stage{height:270px;margin-top:8px}.phone{left:7%;width:151px;height:245px}.watch{right:7%;transform:scale(.86) rotate(9deg);transform-origin:center}.section-heading{align-items:flex-start}.dashboard-grid{gap:11px}.card{padding:15px 13px;border-radius:19px;min-height:177px}.card-value{font-size:1.65rem}.card-header{font-size:.68rem}.chart{height:44px}.split-values .card-value{font-size:1.2rem}}
+    @media(max-width:380px){.dashboard-grid{grid-template-columns:1fr}.card{min-height:160px}.device-stage{transform:scale(.9);margin-left:-12px;margin-right:-12px}}
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <!-- Header & Connection Controls -->
-        <header>
-            <h1>AI Smart Fitness Band - Web Telemetry</h1>
-            <div class="control-panel">
-                <button id="connect-btn">Connect Band</button>
-                <button id="disconnect-btn" disabled style="background-color: transparent; color: var(--danger); border: 1px solid var(--danger); box-shadow: none;">Disconnect</button>
-                <div class="status-badge">
-                    <span id="status-dot" class="status-dot"></span>
-                    <span id="connection-status">Disconnected</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Error Notification Banner -->
-        <div id="error-banner"></div>
-
-        <!-- Dashboard Sensor Cards Grid -->
-        <div class="dashboard-grid">
-            
-            <!-- 1. AI Activity Prediction Card -->
-            <div class="card highlight-card">
-                <div class="card-header">
-                    <span>AI Model Output</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
-                <div id="activity-value" class="card-value">--</div>
-                <div class="card-subtext">Classified via Edge Impulse Edge ML</div>
-            </div>
-
-            <!-- 2. MAX30102 Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span>MAX30102 (Vitals)</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                </div>
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span id="hr-value" class="card-value">--</span>
-                        <span style="font-size: 0.9rem; color: var(--text-secondary);">BPM</span>
-                    </div>
-                    <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: baseline;">
-                        <span id="spo2-value" style="font-size: 1.2rem; font-weight: 600;">--</span>
-                        <span style="font-size: 0.8rem; color: var(--text-secondary);">SpO2 %</span>
-                    </div>
-                </div>
-                <div class="card-subtext">Optical Pulse Oximetry</div>
-            </div>
-
-            <!-- 3. Motion Sensor Card (MPU6050 / LIS3DH) -->
-            <div class="card">
-                <div class="card-header">
-                    <span>Motion Sensor</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div id="motion-value" class="card-value">--</div>
-                <div class="card-subtext">Accelerometer & Gyroscope Telemetry</div>
-            </div>
-
-            <!-- 4. Environment Sensor Card (DHT22) -->
-            <div class="card">
-                <div class="card-header">
-                    <span>DHT22 Environment</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div>
-                        <div id="temp-value" class="card-value" style="font-size: 1.4rem;">--°C</div>
-                        <div class="card-subtext">Temperature</div>
-                    </div>
-                    <div>
-                        <div id="humidity-value" class="card-value" style="font-size: 1.4rem;">--%</div>
-                        <div class="card-subtext">Humidity</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Air Quality Card (MQ-135) -->
-            <div class="card">
-                <div class="card-header">
-                    <span>MQ-135 Air Quality</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19 12H2"/></svg>
-                </div>
-                <div id="aqi-value" class="card-value">-- PPM</div>
-                <div class="card-subtext">Air Gas Concentration Index</div>
-            </div>
-
-            <!-- 6. Power Status Card (LiPo Battery) -->
-            <div class="card">
-                <div class="card-header">
-                    <span>LiPo Battery Level</span>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"/><line x1="23" y1="11" x2="23" y2="13"/></svg>
-                </div>
-                <div>
-                    <div id="battery-value" class="card-value">--%</div>
-                    <div class="battery-bar-container">
-                        <div id="battery-bar" class="battery-bar"></div>
-                    </div>
-                </div>
-                <div id="battery-status-text" class="card-subtext">Charging State: Unknown</div>
-            </div>
-
-        </div>
+<div class="container">
+  <nav class="topbar">
+    <div class="brand"><div class="brand-mark">⌁</div><div>SmartFit Guardian<small>AI FITNESS COMPANION</small></div></div>
+    <div class="control-panel">
+      <button id="connect-btn">Connect Band</button>
+      <button id="disconnect-btn" disabled>Disconnect</button>
+      <div class="status-badge"><span id="status-dot" class="status-dot"></span><span id="connection-status">Disconnected</span></div>
     </div>
+  </nav>
+  <div id="error-banner"></div>
 
-    <!-- JavaScript & Web Bluetooth Implementation -->
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow"><i></i> YOUR HEALTH, IN REAL TIME</div>
+      <h1>Know your body.<br><span class="gradient-text">Move smarter.</span></h1>
+      <p>Your personal fitness companion brings vital readings, activity insights and device status together in one simple dashboard.</p>
+      <div class="hero-note"><span>✦</span> Live data from your ESP32 fitness band</div>
+    </div>
+    <div class="device-stage" aria-label="Smartwatch and mobile dashboard illustration">
+      <div class="phone">
+        <div class="phone-notch"></div><div class="phone-title">SmartFit • Overview</div>
+        <div class="phone-label">TODAY'S ACTIVITY</div><div class="phone-stat">Your day</div>
+        <div class="phone-chart"> <b style="--h:25%"></b><b style="--h:45%"></b><b style="--h:32%"></b><b style="--h:72%"></b><b style="--h:50%"></b><b style="--h:88%"></b><b style="--h:61%"></b><b style="--h:100%"></b><b style="--h:68%"></b><b style="--h:80%"></b><b style="--h:55%"></b><b style="--h:92%"></b></div>
+        <div class="phone-label">HEALTH SNAPSHOT</div><div class="phone-row"><span>Heart rate</span><b>Live</b></div><div class="phone-row"><span>Oxygen</span><b>Live</b></div>
+        <div class="phone-chart blue"><b style="--h:32%"></b><b style="--h:50%"></b><b style="--h:42%"></b><b style="--h:75%"></b><b style="--h:58%"></b><b style="--h:90%"></b><b style="--h:66%"></b><b style="--h:100%"></b><b style="--h:75%"></b><b style="--h:83%"></b></div>
+      </div>
+      <div class="watch"><div class="watch-strap"></div><div class="watch-case"><div class="watch-screen">
+        <div class="watch-reading"><span class="watch-icon red">♥</span><div><div class="watch-number">LIVE</div><div class="watch-unit">HEART MONITOR</div></div></div>
+        <div class="watch-reading"><span class="watch-icon blue">◉</span><div><div class="watch-number">SpO₂</div><div class="watch-unit">OXYGEN ESTIMATE</div></div></div>
+        <div class="watch-wave"><i style="--h:35%"></i><i style="--h:60%"></i><i style="--h:45%"></i><i style="--h:95%"></i><i style="--h:70%"></i><i style="--h:40%"></i><i style="--h:82%"></i><i style="--h:55%"></i><i style="--h:100%"></i><i style="--h:42%"></i><i style="--h:68%"></i></div>
+        <div class="watch-button">↻</div>
+      </div></div></div>
+    </div>
+  </section>
+
+  <div class="section-heading"><div><h2>Your health overview</h2><p>Measurements update when your band sends new data.</p></div><span class="live-label">● LIVE MONITORING</span></div>
+
+  <section class="dashboard-grid">
+    <article class="card red-card">
+      <div class="card-header"><span>HEART RATE</span><svg viewBox="0 0 24 24" fill="none" stroke="#ff4969" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M3 12h4l2-4 3 8 2-4h7"/></svg></div>
+      <div class="metric-line"><span id="hr-value" class="card-value">--</span><span class="metric-unit">BPM</span></div>
+      <div class="chart"><i style="--h:30%"></i><i style="--h:45%"></i><i style="--h:36%"></i><i style="--h:64%"></i><i style="--h:48%"></i><i style="--h:76%"></i><i style="--h:55%"></i><i style="--h:90%"></i><i style="--h:62%"></i><i style="--h:75%"></i><i style="--h:45%"></i><i style="--h:58%"></i><i style="--h:36%"></i><i style="--h:68%"></i></div><div class="card-foot"><span>Sensor reading</span><span>MAX30102</span></div>
+    </article>
+    <article class="card blue-card">
+      <div class="card-header"><span>OXYGEN (SpO₂)</span><svg viewBox="0 0 24 24" fill="none" stroke="#19bfff" stroke-width="2"><path d="M12 2s7 7.2 7 13a7 7 0 0 1-14 0c0-5.8 7-13 7-13Z"/><path d="M9 16c.5 1.5 1.5 2 3 2"/></svg></div>
+      <div class="metric-line"><span id="spo2-value" class="card-value">--</span><span class="metric-unit">%</span></div>
+      <div class="chart"><i style="--h:60%"></i><i style="--h:45%"></i><i style="--h:72%"></i><i style="--h:55%"></i><i style="--h:82%"></i><i style="--h:65%"></i><i style="--h:92%"></i><i style="--h:70%"></i><i style="--h:85%"></i><i style="--h:60%"></i><i style="--h:76%"></i><i style="--h:88%"></i><i style="--h:66%"></i><i style="--h:80%"></i></div><div class="card-foot"><span>Estimated reading</span><span>MAX30102</span></div>
+    </article>
+    <article class="card cyan-card">
+      <div class="card-header"><span>ACTIVITY DETECTION</span><svg viewBox="0 0 24 24" fill="none" stroke="#12d7d0" stroke-width="2"><path d="M13 2 4 14h7l-1 8 10-13h-7l1-7Z"/></svg></div>
+      <div id="activity-value" class="card-value activity-value">--</div><div id="motion-value" class="activity-pill">Waiting for movement data</div>
+      <div class="chart"><i style="--h:18%"></i><i style="--h:25%"></i><i style="--h:32%"></i><i style="--h:20%"></i><i style="--h:45%"></i><i style="--h:36%"></i><i style="--h:70%"></i><i style="--h:52%"></i><i style="--h:82%"></i><i style="--h:64%"></i><i style="--h:90%"></i><i style="--h:72%"></i><i style="--h:48%"></i><i style="--h:62%"></i></div><div class="card-foot"><span>Motion classification</span><span>MPU6050</span></div>
+    </article>
+    <article class="card purple-card">
+      <div class="card-header"><span>ENVIRONMENT</span><svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M14 14.8V5a3 3 0 0 0-6 0v9.8a5 5 0 1 0 6 0Z"/></svg></div>
+      <div class="split-values"><div><div id="temp-value" class="card-value">--°C</div><div class="card-subtext">Temperature</div></div><div><div id="humidity-value" class="card-value">--%</div><div class="card-subtext">Humidity</div></div></div>
+      <div class="chart"><i style="--h:38%"></i><i style="--h:44%"></i><i style="--h:41%"></i><i style="--h:50%"></i><i style="--h:46%"></i><i style="--h:56%"></i><i style="--h:48%"></i><i style="--h:62%"></i><i style="--h:55%"></i><i style="--h:65%"></i><i style="--h:58%"></i><i style="--h:70%"></i></div><div class="card-foot"><span>Ambient conditions</span><span>DHT22</span></div>
+    </article>
+    <article class="card green-card">
+      <div class="card-header"><span>AIR SENSOR INDEX</span><span style="color:#22c997;font-size:1.1rem">〰</span></div>
+      <div class="metric-line"><span id="aqi-value" class="card-value">--</span><span class="metric-unit">PPM*</span></div><div class="card-subtext">MQ-135 sensor output</div>
+      <div class="chart"><i style="--h:25%"></i><i style="--h:35%"></i><i style="--h:30%"></i><i style="--h:48%"></i><i style="--h:40%"></i><i style="--h:58%"></i><i style="--h:45%"></i><i style="--h:70%"></i><i style="--h:52%"></i><i style="--h:64%"></i><i style="--h:42%"></i><i style="--h:55%"></i></div><div class="card-foot"><span>Raw sensor value</span><span>MQ-135</span></div>
+    </article>
+    <article class="card">
+      <div class="card-header"><span>BATTERY LEVEL</span><svg viewBox="0 0 24 24" fill="none" stroke="#20c997" stroke-width="2"><rect x="2" y="6" width="18" height="12" rx="2"/><path d="M22 10v4"/></svg></div>
+      <div id="battery-value" class="card-value">--%</div><div class="battery-bar-container"><div id="battery-bar" class="battery-bar"></div></div><div id="battery-status-text" class="card-subtext">Charging State: Unknown</div>
+    </article>
+  </section>
+  <p class="bottom-note">SmartFit Guardian is an educational fitness-monitoring prototype, not a medical device. Sensor estimates may be affected by movement, fit and environment. *MQ-135 output should not be treated as calibrated AQI without calibration.</p>
+</div>
+
     <script>
         // Custom ESP32 BLE Service & Characteristic UUID Placeholders
         // Replace these with your actual BLE Service UUID and Telemetry Characteristic UUID programmed into the ESP32
@@ -360,118 +174,4 @@
 
                 bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
 
-                // Connect to GATT Server
-                const server = await bluetoothDevice.gatt.connect();
-                const service = await server.getPrimaryService(SERVICE_UUID);
-                bluetoothCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-
-                // Subscribe to notifications
-                await bluetoothCharacteristic.startNotifications();
-                bluetoothCharacteristic.addEventListener('characteristicvaluechanged', handleTelemetryNotification);
-
-                // Update UI state upon successful connection
-                updateConnectionState(true);
-
-            } catch (error) {
-                console.error("Connection failed:", error);
-                showError("Bluetooth Connection Failed: " + error.message);
-                updateConnectionState(false);
-            }
-        }
-
-        function disconnectBLE() {
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-                bluetoothDevice.gatt.disconnect();
-            }
-            updateConnectionState(false);
-        }
-
-        function onDisconnected() {
-            console.warn("Device disconnected unexpectedly.");
-            updateConnectionState(false);
-            showError("Device disconnected connection dropped.");
-        }
-
-        function updateConnectionState(isConnected) {
-            if (isConnected) {
-                connectionStatus.textContent = "Connected";
-                statusDot.classList.add('connected');
-                connectBtn.disabled = true;
-                disconnectBtn.disabled = false;
-            } else {
-                connectionStatus.textContent = "Disconnected";
-                statusDot.classList.remove('connected');
-                connectBtn.disabled = false;
-                disconnectBtn.disabled = true;
-                resetDashboardValues();
-            }
-        }
-
-        // Parse incoming raw telemetry string notifications
-        // Expected format: "HR,SpO2,Activity,Temp,Humidity,AQI,Battery,ChargingState"
-        // Example: "72,98,Walking,25.4,60.2,45,85,Charging"
-        function handleTelemetryNotification(event) {
-            const value = event.target.value;
-            const decoder = new TextDecoder('utf-8');
-            const rawData = decoder.decode(value);
-
-            console.log("Received BLE Data:", rawData);
-
-            const parts = rawData.split(',');
-            if (parts.length >= 7) {
-                const hr = parts[0].trim();
-                const spo2 = parts[1].trim();
-                const activity = parts[2].trim();
-                const temp = parts[3].trim();
-                const humidity = parts[4].trim();
-                const aqi = parts[5].trim();
-                const battery = parts[6].trim();
-                const charging = parts[7] ? parts[7].trim() : "Normal";
-
-                // Update DOM elements dynamically
-                hrVal.textContent = hr;
-                spo2Val.textContent = spo2 + "%";
-                activityVal.textContent = activity;
-                motionVal.textContent = (activity === "Running" ? "High Intensity" : (activity === "Walking" ? "Moderate" : "Stationary"));
-                tempVal.textContent = temp + "°C";
-                humidityVal.textContent = humidity + "%";
-                aqiVal.textContent = aqi + " PPM";
-                
-                const battNum = parseInt(battery, 10);
-                batteryVal.textContent = battNum + "%";
-                batteryBar.style.width = battNum + "%";
-                batteryStatusText.textContent = `State: ${charging}`;
-                
-                // Color-code battery bar based on level
-                if (battNum < 20) {
-                    batteryBar.style.backgroundColor = "var(--danger)";
-                } else {
-                    batteryBar.style.backgroundColor = "var(--success)";
-                }
-            }
-        }
-
-        function resetDashboardValues() {
-            activityVal.textContent = "--";
-            hrVal.textContent = "--";
-            spo2Val.textContent = "--";
-            motionVal.textContent = "--";
-            tempVal.textContent = "--°C";
-            humidityVal.textContent = "--%";
-            aqiVal.textContent = "-- PPM";
-            batteryVal.textContent = "--%";
-            batteryBar.style.width = "0%";
-            batteryStatusText.textContent = "Charging State: Unknown";
-        }
-
-        function showError(message) {
-            errorBanner.textContent = message;
-            errorBanner.style.display = "block";
-        }
-
-        function hideError() {
-            errorBanner.style.display = "none";
-        }
-    </script>
-</body>
-</html>
+                // Con
